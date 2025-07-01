@@ -33,10 +33,20 @@ if video_file:
     video_box = st.empty()
     status_box = st.empty()
 
-    # Параметры для ускорения
-    skip_frames = 1  # Пропуск каждого 2-го кадра
-    target_size = (480, 270)  # Уменьшенное разрешение
+    # Получаем оригинальное разрешение видео
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+    # Вычисляем пропорциональное уменьшение (макс. ширина 800px)
+    max_width = 800
+    if width > max_width:
+        ratio = max_width / width
+        target_size = (max_width, int(height * ratio))
+    else:
+        target_size = (width, height)
+
     frame_count = 0
+    skip_frames = 1  # Пропуск каждого 2-го кадра
 
     while True:
         ret, frame = cap.read()
@@ -47,7 +57,7 @@ if video_file:
         if frame_count % (skip_frames + 1) != 0:
             continue
 
-        # Ускоренная обработка кадра
+        # Пропорциональное уменьшение кадра
         frame = cv2.resize(frame, target_size)
         results = model(frame, conf=0.5, verbose=False)
 
@@ -57,8 +67,8 @@ if video_file:
         else:
             status_box.error("ТРАНСПОРТА НЕТ")
 
-        # Отображение видео
-        video_box.image(results[0].plot(), channels="BGR", use_container_width=True)
+        # Отображение видео с автоматическим масштабированием
+        video_box.image(results[0].plot(), channels="BGR", use_column_width=True)
 
     cap.release()
     os.unlink(tfile.name)  # Удаляем временный файл
