@@ -7,18 +7,16 @@ from PIL import Image
 
 @st.cache_resource 
 def load_model():
-    return YOLO('best.pt', task='detect')  # Явно указываем задачу
+    return YOLO('best.pt', task='detect')
 
 model = load_model()
 
-# Интерфейс
 logo = Image.open('графики и лого/лого2.jpg')
-st.image(logo, width=800)
+st.image(logo, width=700)
 
 video_file = st.file_uploader("Загрузите видео (до 1GB)", type=["mp4", "avi", "mov"])
 
 if video_file:
-    # Сохраняем видео во временный файл
     with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as tfile:
         tfile.write(video_file.read())
 
@@ -26,12 +24,10 @@ if video_file:
     video_box = st.empty()
     status_box = st.empty()
 
-    # Получаем оригинальное разрешение видео
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     
-    # Вычисляем пропорциональное уменьшение (макс. ширина 800px)
-    max_width = 800
+    max_width = 1200
     if width > max_width:
         ratio = max_width / width
         target_size = (max_width, int(height * ratio))
@@ -39,7 +35,7 @@ if video_file:
         target_size = (width, height)
 
     frame_count = 0
-    skip_frames = 1  # Пропуск каждого 2-го кадра
+    skip_frames = 1
 
     while True:
         ret, frame = cap.read()
@@ -50,21 +46,24 @@ if video_file:
         if frame_count % (skip_frames + 1) != 0:
             continue
 
-        # Пропорциональное уменьшение кадра
         frame = cv2.resize(frame, target_size)
         results = model(frame, conf=0.5, verbose=False)
 
-        # Обновление статуса
         if len(results[0].boxes) > 0:
             status_box.success("ТРАНСПОРТ ЕСТЬ")
         else:
             status_box.error("ТРАНСПОРТА НЕТ")
 
-        # Отображение видео с автоматическим масштабированием (исправленный параметр)
-        video_box.image(results[0].plot(), channels="BGR", use_container_width=True)
+        result_img = results[0].plot()
+        display_width = 1200 
+        display_height = int(display_width * (height/width))
+        resized_img = cv2.resize(result_img, (display_width, display_height))
+        video_box.image(resized_img, channels="BGR")
 
     cap.release()
-    os.unlink(tfile.name)  # Удаляем временный файл
-    st.balloons()  # Анимация вместо текста
+    os.unlink(tfile.name)
+    st.balloons()
 else:
     st.info("Загрузите видеофайл")
+    
+    #venv310
