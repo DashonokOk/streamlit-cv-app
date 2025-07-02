@@ -5,16 +5,9 @@ import tempfile
 import os
 from PIL import Image
 
-# Убираем лимит на размер файла (до 1GB)
-if not os.path.exists(os.path.expanduser('~/.streamlit')):
-    os.makedirs(os.path.expanduser('~/.streamlit'))
-with open(os.path.expanduser('~/.streamlit/config.toml'), 'w') as f:
-    f.write("[server]\nmaxUploadSize=1000")
-
-# Загрузка модели
-@st.cache_resource
+@st.cache_resource 
 def load_model():
-    return YOLO('best.pt')
+    return YOLO('best.pt', task='detect')  # Явно указываем задачу
 
 model = load_model()
 

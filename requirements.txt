@@ -1,5 +1,6 @@
 opencv-python-headless==4.9.0.80
-ultralytics==8.0.196
+ultralytics==8.1.0
 streamlit==1.32.0
 Pillow==10.1.0
 numpy==1.26.4
+protobuf==3.20.3
