@@ -60,11 +60,11 @@ if video_file:
         else:
             status_box.error("ТРАНСПОРТА НЕТ")
 
-        # Отображение видео с автоматическим масштабированием
-        video_box.image(results[0].plot(), channels="BGR", use_column_width=True)
+        # Отображение видео с автоматическим масштабированием (исправленный параметр)
+        video_box.image(results[0].plot(), channels="BGR", use_container_width=True)
 
     cap.release()
     os.unlink(tfile.name)  # Удаляем временный файл
     st.balloons()  # Анимация вместо текста
 else:
-    st.info("Загрузите видеофайл любого размера")
+    st.info("Загрузите видеофайл")
