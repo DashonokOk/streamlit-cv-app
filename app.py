@@ -6,11 +6,13 @@ import os
 from PIL import Image
 import gc
 
+# Конфигурация страницы
 st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
+# --- Настройки сервера ---
 if not os.path.exists('.streamlit'):
     os.makedirs('.streamlit')
     
@@ -21,20 +23,23 @@ maxUploadSize = 1000
 enableCORS = false
 """)
 
+# --- Загрузка модели ---
 @st.cache_resource 
 def load_model():
     return YOLO('best.pt', task='detect')
 
 model = load_model()
 
+# --- Логотип ---
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
+    # Убрано use_container_width для совместимости
     st.image(Image.open('графики и лого/лого2.jpg'), 
-             width=800, 
-             use_container_width=True)
+             width=800)  # Только width без use_container_width
 
 st.markdown("---")
 
+# --- Остальной код остается без изменений ---
 video_file = st.file_uploader(
     "Загрузите видео (до 1GB)", 
     type=["mp4", "avi", "mov"]
@@ -113,9 +118,8 @@ if video_file:
                 else:
                     status_text.warning("Транспорт не обнаружен")
                 
-                video_box.image(results[0].plot(), 
-                              channels="BGR", 
-                              use_container_width=True)
+                # Убрано use_container_width для вывода видео
+                video_box.image(results[0].plot(), channels="BGR")
                 
                 del results
                 gc.collect()
