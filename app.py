@@ -5,16 +5,13 @@ import tempfile
 import os
 import gc
 
-# Конфигурация страницы
 st.set_page_config(layout="wide")
 
-# --- Логотип ---
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.image("графики и лого/лого2.jpg", width=800)
 st.markdown("---")
 
-# --- Загрузка модели ---
 @st.cache_resource
 def load_model():
     return YOLO('best.pt', task='detect')
@@ -50,7 +47,6 @@ if video_file:
         - Всего кадров: {total_frames}
         """)
 
-        # Настройки интерфейса
         skip_frames = st.sidebar.slider(
             "Пропуск кадров",
             0, 10, 2,
@@ -80,7 +76,6 @@ if video_file:
                 else:
                     status_text.warning(f"🚫 Нет транспорта (кадр {frame_count})")
 
-                # Отображаем результаты детекции на полном кадре
                 annotated_frame = results[0].plot()
                 video_box.image(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB))
 
